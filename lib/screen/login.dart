@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_UI/widget/text_widget.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -6,8 +7,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _putUser = TextEditingController();
-  TextEditingController _putPassword = TextEditingController();
+  TextEditingController _email;
+  TextEditingController _password;
 
   bool _val = false;
   void _onChanged(bool val) {
@@ -17,137 +18,195 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _email = TextEditingController();
+    _password = TextEditingController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Container(
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
           child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 70, horizontal: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Login",
-              style: TextStyle(fontSize: 29, fontWeight: FontWeight.bold),
+            padding: EdgeInsets.symmetric(
+              vertical: size.height * 0.04,
+              horizontal: size.width * 0.02,
             ),
-            SizedBox(height: 9),
-            buildRow(),
-            SizedBox(height: 40),
-            buildTextUserFormField(),
-            SizedBox(height: 10),
-            buildTextPasswordFormField(),
-            SizedBox(height: 15),
-            buildRowSecond(),
-            SizedBox(height: 18),
-            buildCenterButton(size),
-            SizedBox(height: 18),
-            buildCenterOther(),
-            SizedBox(height: 18),
-            buildRowThird(),
-          ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                text(
+                  "Login",
+                  size: Theme.of(context).textTheme.headline4.fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+                buildRow(
+                  textSays: "Don't have an account? ",
+                  textCreate: " Create your account.",
+                ),
+                SizedBox(height: size.height * 0.05),
+                textField(
+                  controller: _email,
+                  labelText: "Username",
+                  suffixIcon: Icon(
+                    Icons.person,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(height: size.height * 0.01),
+                textField(
+                  controller: _password,
+                  labelText: "Password",
+                  obsecure: true,
+                  suffixIcon: Icon(
+                    Icons.lock,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(height: size.height * 0.04),
+                rowCheckBoxText(
+                  textRemember: "Remember Me",
+                  textForgot: "Forgot Password?",
+                ),
+                SizedBox(height: size.height * 0.05),
+                elevatedButton(size),
+                SizedBox(height: size.height * 0.04),
+                Center(
+                  child: text(
+                    "Or Login with",
+                    color: Colors.grey,
+                    size: 19,
+                  ),
+                ),
+                SizedBox(height: size.height * 0.04),
+                alernativeLogin(size),
+              ],
+            ),
+          ),
         ),
-      )),
+      ),
     );
   }
 
-  Row buildRow() {
+  Widget buildRow({String textSays, String textCreate}) {
     return Row(
       children: [
         SizedBox(
-            child: Text(
-          "Don't have an account? ",
-          style: TextStyle(fontSize: 17),
+            child: text(
+          textSays,
+          size: 17,
+          color: Colors.white,
         )),
         SizedBox(
-          child: Text(
-            " Create your account.",
-            style: TextStyle(fontSize: 17, color: Colors.red),
+          child: text(
+            textCreate,
+            color: Colors.red,
+            size: 17,
           ),
         ),
       ],
     );
   }
 
-  TextFormField buildTextUserFormField() {
-    return TextFormField(
-      controller: _putUser,
+  Widget textField({
+    String labelText,
+    TextEditingController controller,
+    Widget suffixIcon,
+    bool obsecure,
+  }) {
+    return TextField(
+      style: TextStyle(
+        color: Colors.white,
+      ),
+      controller: controller,
+      obscureText: obsecure ?? false,
       decoration: InputDecoration(
-        labelText: "Username",
-        suffixIcon: Icon(Icons.person),
+        labelText: labelText,
+        labelStyle: TextStyle(
+          color: Colors.grey,
+        ),
+        suffixIcon: suffixIcon,
       ),
     );
   }
 
-  TextFormField buildTextPasswordFormField() {
-    return TextFormField(
-      controller: _putPassword,
-      obscureText: true,
-      decoration: InputDecoration(
-        labelText: "Password",
-        suffixIcon: Icon(Icons.lock),
-      ),
-    );
-  }
-
-  Row buildRowSecond() {
+  Widget rowCheckBoxText({
+    String textRemember,
+    String textForgot,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SizedBox(
             child: Row(
           children: [
-            Checkbox(value: _val, onChanged: _onChanged),
-            Text(
-              "Remember Me ",
-              style: TextStyle(fontSize: 17),
+            Checkbox(
+              value: _val,
+              onChanged: _onChanged,
+            ),
+            text(
+              textRemember,
+              size: 17,
+              color: Colors.white,
             ),
           ],
         )),
         SizedBox(
-          child: Text(
-            "Forgot Password?",
-            style: TextStyle(fontSize: 17, color: Colors.red),
-          ),
+          child: text(textForgot, size: 17, color: Colors.red),
         ),
       ],
     );
   }
 
-  Center buildCenterButton(Size size) {
+  Widget elevatedButton(Size size) {
     return Center(
-      child: Container(
-        height: size.height * 0.6 / 8,
-        width: size.width * 0.6 / 1,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(29), color: Colors.green),
-        child: Text(
-          "Login".toUpperCase(),
-          style: TextStyle(color: Colors.white, fontSize: 24),
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          minimumSize: Size(size.width * 0.5, size.height * 0.06),
         ),
+        child: text("Login".toUpperCase(), color: Colors.white, size: 24),
       ),
     );
   }
 
-  Center buildCenterOther() {
-    return Center(
-      child: Text(
-        "Or Login with",
-        style: TextStyle(color: Colors.grey, fontSize: 19),
-      ),
-    );
-  }
-
-  Row buildRowThird() {
+  Widget alernativeLogin(size) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(height: 60, child: Image.asset("assets/fac.png")),
-        SizedBox(width: 7),
-        Container(height: 60, child: Image.asset("assets/twi.png")),
-        SizedBox(width: 7),
-        Container(height: 60, child: Image.asset("assets/google.png")),
+        circleAvatar(
+          backgroundImage: AssetImage("assets/fac.png"),
+        ),
+        SizedBox(
+          width: size.width * 0.03,
+        ),
+        circleAvatar(
+          backgroundImage: AssetImage("assets/twi.png"),
+        ),
+        SizedBox(
+          width: size.width * 0.03,
+        ),
+        circleAvatar(
+          backgroundImage: AssetImage("assets/google.png"),
+        ),
       ],
+    );
+  }
+
+  Widget circleAvatar({ImageProvider<Object> backgroundImage}) {
+    return CircleAvatar(
+      radius: 26,
+      backgroundImage: backgroundImage,
     );
   }
 }
